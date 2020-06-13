@@ -1,0 +1,38 @@
+version: "3"
+
+networks: 
+    livewire-upload-bitfumes:
+
+services: 
+    apache:
+        build: 
+            context: ""
+            dockerfile: ./docker/Dockerfile
+        container_name: apache
+        depends_on: 
+            - mysql
+        ports: 
+            - 80:80
+            - 443:443
+        volumes: 
+            - ./src:/var/www/html/src:cached
+            - ./docker/certs:/var/www/certs:cached
+        networks:
+            - livewire-upload-bitfumes
+    mysql:
+        image: mysql:8.0
+        container_name: mysql
+        restart: unless-stopped
+        tty: true
+        ports: 
+            - "23306:3306"
+        volumes:
+            - ./mysql:/var/lib/mysql:cached
+        environment:
+            MYSQL_USER: root
+            MYSQL_PASSWORD: secret
+            MYSQL_ROOT_PASSWORD: secret
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        networks:
+            - livewire-upload-bitfumes
